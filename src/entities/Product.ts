@@ -22,8 +22,8 @@ export class Product extends BaseEntity {
   @Column({ type: "decimal" }) //if decimal not be defined, price will become int in psql automatically
   price!: number;
 
-  /* @Column()
-  creatorId!: number; */
+  @Column()
+  creatorId!: number; // delete from product, then select * from product
 
   @ManyToOne(() => User, (user) => user.products)
   creator: User;

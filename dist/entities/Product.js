@@ -28,6 +28,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Product.prototype, "price", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Product.prototype, "creatorId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.products),
     __metadata("design:type", User_1.User)
 ], Product.prototype, "creator", void 0);
