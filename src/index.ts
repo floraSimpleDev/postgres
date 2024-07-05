@@ -1,9 +1,12 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { schema } from "./schema";
+import typeormConfig from "./typeorm.config";
 
 // set up ApolloServer
 const boot = async () => {
+  await typeormConfig.initialize();
+
   const server = new ApolloServer({
     schema,
   });
