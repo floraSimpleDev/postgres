@@ -1,5 +1,6 @@
 import { extendType, floatArg, nonNull, objectType, stringArg } from "nexus";
 import { Product } from "../entities/Product";
+import { Context } from "../types/Context";
 
 // init ProductType
 export const ProductType = objectType({
@@ -18,9 +19,11 @@ export const ProductsQuery = extendType({
     // products = get products
     type.nonNull.list.nonNull.field("products", {
       type: "Product",
-      // underscore make sure no error notice
-      resolve(_parent, _args, _context, _info): Promise<Product[]> {
-        return Product.find();
+      // underscore make sure no error notice; _context is accessable for all the resolvers
+      resolve(_parent, _args, context: Context, _info): Promise<Product[]> {
+        //return Product.find();
+        const { connect } = context;
+        return connect.query(`select * from product`);
       },
     });
   },
