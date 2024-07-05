@@ -1,6 +1,7 @@
 import { extendType, objectType } from "nexus";
 import { NexusGenObjects } from "../../nexus-typegen";
 
+// init ProductType
 export const ProductType = objectType({
   name: "Product",
   definition(type) {
@@ -10,6 +11,7 @@ export const ProductType = objectType({
   },
 });
 
+// instance products
 let products: NexusGenObjects["Product"][] = [
   {
     id: 1,
@@ -23,6 +25,7 @@ let products: NexusGenObjects["Product"][] = [
   },
 ];
 
+// set up ProductsQuery
 export const ProductsQuery = extendType({
   type: "Query",
   definition(type) {
@@ -36,3 +39,11 @@ export const ProductsQuery = extendType({
     });
   },
 });
+/* query in Apollo server 
+query ProductsQuery {
+  products {
+    id
+    name
+    price
+  }
+} */
