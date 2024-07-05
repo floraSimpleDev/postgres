@@ -5,6 +5,7 @@ import typeormConfig from "./typeorm.config";
 
 // set up ApolloServer
 const boot = async () => {
+  // connect psql database
   await typeormConfig.initialize();
 
   const server = new ApolloServer({
