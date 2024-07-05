@@ -1,5 +1,5 @@
 import { extendType, floatArg, nonNull, objectType, stringArg } from "nexus";
-import { NexusGenObjects } from "../../nexus-typegen";
+import { Product } from "../entities/Product";
 
 // init ProductType
 export const ProductType = objectType({
@@ -11,20 +11,6 @@ export const ProductType = objectType({
   },
 });
 
-// instance products
-let products: NexusGenObjects["Product"][] = [
-  {
-    id: 1,
-    name: "Product 1",
-    price: 15.99,
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    price: 12.39,
-  },
-];
-
 // set up ProductsQuery
 export const ProductsQuery = extendType({
   type: "Query",
@@ -33,20 +19,12 @@ export const ProductsQuery = extendType({
     type.nonNull.list.nonNull.field("products", {
       type: "Product",
       // underscore make sure no error notice
-      resolve(_parent, _args, _context, _info) {
-        return products;
+      resolve(_parent, _args, _context, _info): Promise<Product[]> {
+        return Product.find();
       },
     });
   },
 });
-/* query in Apollo server 
-query ProductsQuery {
-  products {
-    id
-    name
-    price
-  }
-} */
 
 // add new product into Product object
 export const CreateProductMutation = extendType({
@@ -58,27 +36,12 @@ export const CreateProductMutation = extendType({
         name: nonNull(stringArg()),
         price: nonNull(floatArg()),
       },
-      resolve(_parent, args, _context, _info) {
+      resolve(_parent, args, _context, _info): Promise<Product> {
         const { name, price } = args;
-        const product = {
-          id: products.length + 1,
-          name,
-          price,
-        };
 
-        products.push(product);
-        console.log(products);
-
-        return product;
+        // .save() will return a Promise
+        return Product.create({ name, price }).save();
       },
     });
   },
 });
-
-/* mutation CreateProduct {
-  createProduct(name:"Product 3", price: 21.22) {
-    id
-    name
-    price
-  }
-} */
