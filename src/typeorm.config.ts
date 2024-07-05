@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
 import { Product } from "./entities/Product";
+import { User } from "./entities/User";
 
 dotenv.config();
 
@@ -8,7 +9,7 @@ dotenv.config();
 export default new DataSource({
   type: "postgres",
   url: process.env.CONNECTION_STRING,
-  entities: [Product],
+  entities: [Product, User],
   synchronize: true, // only use it in development stage
 });
 /* query at psql -> Schemas -> Tables -> product
