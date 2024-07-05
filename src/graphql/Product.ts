@@ -1,4 +1,4 @@
-import { extendType, objectType } from "nexus";
+import { extendType, floatArg, nonNull, objectType, stringArg } from "nexus";
 import { NexusGenObjects } from "../../nexus-typegen";
 
 // init ProductType
@@ -42,6 +42,41 @@ export const ProductsQuery = extendType({
 /* query in Apollo server 
 query ProductsQuery {
   products {
+    id
+    name
+    price
+  }
+} */
+
+// add new product into Product object
+export const CreateProductMutation = extendType({
+  type: "Mutation",
+  definition(type) {
+    type.nonNull.field("createProduct", {
+      type: "Product",
+      args: {
+        name: nonNull(stringArg()),
+        price: nonNull(floatArg()),
+      },
+      resolve(_parent, args, _context, _info) {
+        const { name, price } = args;
+        const product = {
+          id: products.length + 1,
+          name,
+          price,
+        };
+
+        products.push(product);
+        console.log(products);
+
+        return product;
+      },
+    });
+  },
+});
+
+/* mutation CreateProduct {
+  createProduct(name:"Product 3", price: 21.22) {
     id
     name
     price
