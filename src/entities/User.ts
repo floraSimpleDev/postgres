@@ -33,3 +33,5 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+
+// select * from "user", user is a special table in psql
