@@ -3,12 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProductMutation = exports.ProductsQuery = exports.ProductType = void 0;
 const nexus_1 = require("nexus");
 const Product_1 = require("../entities/Product");
+const User_1 = require("../entities/User");
 exports.ProductType = (0, nexus_1.objectType)({
     name: "Product",
     definition(type) {
         type.nonNull.int("id");
         type.nonNull.string("name");
         type.nonNull.float("price");
+        type.nonNull.int("creatorId");
+        type.field("createdBy", {
+            type: "User",
+            resolve(parent, _args, _context, _info) {
+                return User_1.User.findOne({ where: { id: parent.creatorId } });
+            },
+        });
     },
 });
 exports.ProductsQuery = (0, nexus_1.extendType)({
