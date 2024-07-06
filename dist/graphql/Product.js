@@ -32,9 +32,13 @@ exports.CreateProductMutation = (0, nexus_1.extendType)({
                 name: (0, nexus_1.nonNull)((0, nexus_1.stringArg)()),
                 price: (0, nexus_1.nonNull)((0, nexus_1.floatArg)()),
             },
-            resolve(_parent, args, _context, _info) {
+            resolve(_parent, args, context, _info) {
                 const { name, price } = args;
-                return Product_1.Product.create({ name, price }).save();
+                const { userId } = context;
+                if (!userId) {
+                    throw new Error("Can't create product without logging in.");
+                }
+                return Product_1.Product.create({ name, price, creatorId: userId }).save();
             },
         });
     },
