@@ -31,15 +31,13 @@ export const AuthMutation = extendType({
         let token;
 
         try {
+          // create a SQL query; insert a new column; into the User table; select username, email, password;
+          // return all; execute these query commands
           const result = await context.connect
             .createQueryBuilder()
             .insert()
             .into(User)
-            .values({
-              username,
-              password: hashedPassword,
-              email,
-            })
+            .values({ username, email, password: hashedPassword })
             .returning("*")
             .execute();
         } catch (error) {
