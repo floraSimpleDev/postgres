@@ -39,11 +39,16 @@ export const CreateProductMutation = extendType({
         name: nonNull(stringArg()),
         price: nonNull(floatArg()),
       },
-      resolve(_parent, args, _context, _info): Promise<Product> {
+      resolve(_parent, args, context: Context, _info): Promise<Product> {
         const { name, price } = args;
+        const { userId } = context;
+
+        if (!userId) {
+          throw new Error("Can't create product without logging in.");
+        }
 
         // .save() will return a Promise
-        return Product.create({ name, price }).save();
+        return Product.create({ name, price, creatorId: userId }).save();
       },
     });
   },
