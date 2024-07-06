@@ -18,6 +18,49 @@ export const AuthType = objectType({
 export const AuthMutation = extendType({
   type: "Mutation",
   definition(type) {
+    // login resolver
+    type.nonNull.field("login", {
+      type: "AuthType",
+      args: { username: nonNull(stringArg()), password: nonNull(stringArg()) },
+      // query a user, if user exists, then check password
+      async resolve(_parent, args, _context: Context, _info) {
+        const { username, password } = args;
+        // find where the username is equal to the args.username
+        const user = await User.findOne({ where: { username } }); // try to use findOne in case error
+
+        if (!user) {
+          throw new Error("User Not Found.");
+        }
+        // cause we use find to query username, it returns an array of users, but we need only one
+        const isValid = await argon2.verify(user.password, password);
+
+        if (!isValid) {
+          throw new Error("Invalid Password.");
+        }
+
+        // create token for the user
+        const token = jwt.sign(
+          { userId: user.id },
+          process.env.TOKEN_SECRET as jwt.Secret
+        );
+
+        return { user, token };
+      },
+    });
+
+    /* 
+      mutation Login {
+      login (username: "one", password: "123456") {
+        token
+        user {
+          id
+          email
+          username
+        }
+      }
+    }
+ */
+    // register resolver
     type.nonNull.field("register", {
       type: "AuthType",
       args: {
