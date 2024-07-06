@@ -36,11 +36,7 @@ exports.AuthMutation = (0, nexus_1.extendType)({
                         .createQueryBuilder()
                         .insert()
                         .into(User_1.User)
-                        .values({
-                        username,
-                        password: hashedPassword,
-                        email,
-                    })
+                        .values({ username, email, password: hashedPassword })
                         .returning("*")
                         .execute();
                 }
