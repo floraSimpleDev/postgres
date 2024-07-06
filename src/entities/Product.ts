@@ -3,8 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 
 // init Entity
 @Entity()
@@ -19,9 +22,15 @@ export class Product extends BaseEntity {
   @Column({ type: "decimal" }) //if decimal not be defined, price will become int in psql automatically
   price!: number;
 
+  @Column()
+  creatorId!: number; // delete from product, then select * from product
+
+  @ManyToOne(() => User, (user) => user.products)
+  creator: User;
+
   @CreateDateColumn()
   createdAt: Date;
 
-  @CreateDateColumn()
+  @UpdateDateColumn()
   updatedAt: Date;
 }

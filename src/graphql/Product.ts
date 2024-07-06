@@ -1,5 +1,7 @@
 import { extendType, floatArg, nonNull, objectType, stringArg } from "nexus";
-import { NexusGenObjects } from "../../nexus-typegen";
+import { Product } from "../entities/Product";
+import { Context } from "../types/Context";
+import { User } from "../entities/User";
 
 // init ProductType
 export const ProductType = objectType({
@@ -8,22 +10,16 @@ export const ProductType = objectType({
     type.nonNull.int("id");
     type.nonNull.string("name");
     type.nonNull.float("price");
+    type.nonNull.int("creatorId");
+    type.field("createdBy", {
+      type: "User",
+      resolve(parent, _args, _context: Context, _info): Promise<User | null> {
+        // this node is Product's child, use parent.creatorId
+        return User.findOne({ where: { id: parent.creatorId } });
+      },
+    });
   },
 });
-
-// instance products
-let products: NexusGenObjects["Product"][] = [
-  {
-    id: 1,
-    name: "Product 1",
-    price: 15.99,
-  },
-  {
-    id: 2,
-    name: "Product 2",
-    price: 12.39,
-  },
-];
 
 // set up ProductsQuery
 export const ProductsQuery = extendType({
@@ -32,21 +28,15 @@ export const ProductsQuery = extendType({
     // products = get products
     type.nonNull.list.nonNull.field("products", {
       type: "Product",
-      // underscore make sure no error notice
-      resolve(_parent, _args, _context, _info) {
-        return products;
+      // underscore make sure no error notice; _context is accessable for all the resolvers
+      resolve(_parent, _args, context: Context, _info): Promise<Product[]> {
+        //return Product.find();
+        const { connect } = context;
+        return connect.query(`select * from product`);
       },
     });
   },
 });
-/* query in Apollo server 
-query ProductsQuery {
-  products {
-    id
-    name
-    price
-  }
-} */
 
 // add new product into Product object
 export const CreateProductMutation = extendType({
@@ -58,27 +48,17 @@ export const CreateProductMutation = extendType({
         name: nonNull(stringArg()),
         price: nonNull(floatArg()),
       },
-      resolve(_parent, args, _context, _info) {
+      resolve(_parent, args, context: Context, _info): Promise<Product> {
         const { name, price } = args;
-        const product = {
-          id: products.length + 1,
-          name,
-          price,
-        };
+        const { userId } = context;
 
-        products.push(product);
-        console.log(products);
+        if (!userId) {
+          throw new Error("Can't create product without logging in.");
+        }
 
-        return product;
+        // .save() will return a Promise
+        return Product.create({ name, price, creatorId: userId }).save();
       },
     });
   },
 });
-
-/* mutation CreateProduct {
-  createProduct(name:"Product 3", price: 21.22) {
-    id
-    name
-    price
-  }
-} */
