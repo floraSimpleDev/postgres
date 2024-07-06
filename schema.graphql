@@ -9,6 +9,7 @@ type AuthType {
 
 type Mutation {
   createProduct(name: String!, price: Float!): Product!
+  register(email: String!, password: String!, username: String!): AuthType!
 }
 
 type Product {

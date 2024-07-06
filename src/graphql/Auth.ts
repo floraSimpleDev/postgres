@@ -2,6 +2,7 @@ import { extendType, objectType, stringArg, nonNull } from "nexus";
 import { Context } from "../types/Context";
 import { User } from "../entities/User";
 import argon2 from "argon2";
+import * as jwt from "jsonwebtoken";
 
 // init Auth type
 export const AuthType = objectType({
@@ -40,10 +41,32 @@ export const AuthMutation = extendType({
             .values({ username, email, password: hashedPassword })
             .returning("*")
             .execute();
+
+          // get auth user info
+          user = result.raw[0];
+          token = jwt.sign(
+            { userId: user.id },
+            process.env.TOKEN_SECRET as jwt.Secret
+          );
         } catch (error) {
           console.log(error);
         }
+
+        return { user, token };
       },
     });
   },
 });
+
+/* query input
+mutation Register {
+  register(username:"two", email: "two@gmail.com", password: "123456") {
+    user {
+      email
+      id
+      password
+      username
+      }
+    token
+  }
+} */

@@ -64,6 +64,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     createProduct: NexusGenRootTypes['Product']; // Product!
+    register: NexusGenRootTypes['AuthType']; // AuthType!
   }
   Product: { // field return type
     id: number; // Int!
@@ -88,6 +89,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     createProduct: 'Product'
+    register: 'AuthType'
   }
   Product: { // field return type name
     id: 'Int'
@@ -110,6 +112,11 @@ export interface NexusGenArgTypes {
     createProduct: { // args
       name: string; // String!
       price: number; // Float!
+    }
+    register: { // args
+      email: string; // String!
+      password: string; // String!
+      username: string; // String!
     }
   }
 }
