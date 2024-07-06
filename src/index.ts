@@ -3,6 +3,7 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 import { schema } from "./schema";
 import typeormConfig from "./typeorm.config";
 import { Context } from "./types/Context";
+import { auth } from "./middlewares/auth";
 
 // set up ApolloServer
 const boot = async () => {
@@ -17,7 +18,14 @@ const boot = async () => {
   // listen server at port 5000
   const { url } = await startStandaloneServer(server, {
     listen: { port: 5000 },
-    context: async () => ({ connect }), // different syntax in ApolloServer 4
+    // different syntax in ApolloServer 4
+    context: async ({ req }) => {
+      // use req to acquire the headers
+      const token = req?.headers?.authorization
+        ? auth(req.headers.authorization)
+        : null;
+      return { connect, userId: token?.userId };
+    },
   });
   console.log(`I'm listening at ${url}`);
 };
